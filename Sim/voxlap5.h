@@ -73,7 +73,7 @@ typedef struct { char z1, z0, x, y; } vspans;
 #ifndef VOXLAP5
 extern
 #endif
-struct
+struct vx5_struct
 {
 	//------------------------ DATA coming from VOXLAP5 ------------------------
 
