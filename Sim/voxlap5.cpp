@@ -32,6 +32,18 @@
 #endif
 #include <stdlib.h>
 
+
+#if !defined(max)
+#define max(a,b) (((a) > (b)) ? (a) : (b))
+#endif
+#if !defined(min)
+#define min(a,b) (((a) < (b)) ? (a) : (b))
+#endif
+#if defined(__GNUC__)
+#define _inline inline
+#endif
+
+
 extern char keystatus[256];
 extern long startdirectdraw (long *, long *, long *, long *);
 extern void stopdirectdraw ();
