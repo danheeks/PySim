@@ -3,20 +3,14 @@
 #include "voxlap5.h"
 #include "SolidView.h"
 
-#if _DEBUG
-#undef _DEBUG
-#include <python.h>
-#define _DEBUG
-#else
-#include <python.h>
-#endif
+#include <Python.h>
 
+#ifdef WIN32
 #include "windows.h"
+#endif
 
 #include <list>
 
-#include <boost/progress.hpp>
-#include <boost/timer.hpp>
 #include <boost/foreach.hpp>
 #include <boost/python.hpp>
 #include <boost/python/module.hpp>
