@@ -215,9 +215,9 @@ long zbufoff;
 #define gi0 (((long *)&gi)[0])
 #define gi1 (((long *)&gi)[1])
 
-//#ifdef _MSC_VER
+#ifdef _MSC_VER
 
-//#pragma warning(disable:4799) //I know how to use EMMS
+#pragma warning(disable:4799) //I know how to use EMMS
 
 static _inline void fcossin (float a, float *c, float *s)
 {
@@ -405,9 +405,9 @@ static _inline void clearbuf (void *d, long c, long a)
 	}
 }
 
-//#else
-//#pragma message ("Compiler says it isn't Visual C.")
-//#endif
+#else
+#pragma message ("Compiler says it isn't Visual C.")
+#endif
 
 	//if (a < 0) return(0); else if (a > b) return(b); else return(a);
 static _inline long lbound0 (long a, long b) //b MUST be >= 0
