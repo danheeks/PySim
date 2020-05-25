@@ -44,7 +44,7 @@ if (NOT WIN32)
     include_directories(OPENGL_INCLUDE_DIR)
 endif (NOT WIN32)
 
-include_directories("../../PyCAD/CAD")
+include_directories("../../PyCAD")
 
 # this defines the source-files for library
 set(SIM_SRC
