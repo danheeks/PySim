@@ -85,5 +85,5 @@ endif(DEFINED INCLUDE_INSTALL_DIR)
       ${SIM_SRC}
   )
 
-target_link_libraries(cam ${Boost_LIBRARIES} ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
-set_target_properties(cam PROPERTIES PREFIX "") 
+target_link_libraries(sim ${Boost_LIBRARIES} ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
+set_target_properties(sim PROPERTIES PREFIX "") 
