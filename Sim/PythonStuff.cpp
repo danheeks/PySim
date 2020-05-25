@@ -19,7 +19,6 @@
 #include <boost/python/call.hpp>
 
 extern long initapp(long argc, char **argv);
-extern HWND ghwnd;
 
 namespace bp = boost::python;
 
@@ -151,9 +150,8 @@ static void ViewReset()
 	solid_view.ViewReset();
 }
 
-static void Init(int hwnd)
+static void Init()
 {
-	ghwnd = (HWND)hwnd;
 	initapp(0, NULL);
 }
 

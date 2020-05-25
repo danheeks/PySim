@@ -6,7 +6,7 @@ import Mouse
 class SimCanvas(GraphicsCanvas):
     def __init__(self, parent):
         GraphicsCanvas.__init__(self, parent)
-        sim.Init(0)
+        sim.Init()
 
     def Resize(self):
       s = self.GetClientSize()
