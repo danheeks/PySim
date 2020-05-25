@@ -42,38 +42,6 @@ typedef struct
 
 typedef struct { long tim, frm; } seqtyp;
 
-typedef struct
-{
-	long numspr, numhin, numfrm, seqnum;
-	long namoff;
-	kv6data *basekv6;      //Points to original unconnected KV6 (maybe helpful?)
-	struct vx5sprite *spr; //[numspr]
-	hingetype *hinge;      //[numhin]
-	long *hingesort;       //[numhin]
-	short *frmval;         //[numfrm][numhin]
-	seqtyp *seq;           //[seqnum]
-} kfatype;
-
-	//Notice that I aligned each point3d on a 16-byte boundary. This will be
-	//   helpful when I get around to implementing SSE instructions someday...
-typedef struct vx5sprite
-{
-	point3d p; //position in VXL coordinates
-	long flags; //flags bit 0:0=use normal shading, 1=disable normal shading
-					//flags bit 1:0=points to kv6data, 1=points to kfatype
-					//flags bit 2:0=normal, 1=invisible sprite
-	static union { point3d s, x; }; //kv6data.xsiz direction in VXL coordinates
-	static union
-	{
-		kv6data *voxnum; //pointer to KV6 voxel data (bit 1 of flags = 0)
-		kfatype *kfaptr; //pointer to KFA animation  (bit 1 of flags = 1)
-	};
-	static union { point3d h, y; }; //kv6data.ysiz direction in VXL coordinates
-	long kfatim;        //time (in milliseconds) of KFA animation
-	static union { point3d f, z; }; //kv6data.zsiz direction in VXL coordinates
-	long okfatim;       //make vx5sprite exactly 64 bytes :)
-} vx5sprite;
-
 	//Falling voxels shared data: (flst = float list)
 #define FLPIECES 256 //Max # of separate falling pieces
 typedef struct //(68 bytes)
@@ -164,7 +132,6 @@ extern void uninitvoxlap ();
 
 	//File related functions:
 extern long loadsxl (const char *, char **, char **, char **);
-extern char *parspr (vx5sprite *, char **);
 extern void loadnul (dpoint3d *, dpoint3d *, dpoint3d *, dpoint3d *);
 extern long loadpng (const char *, dpoint3d *, dpoint3d *, dpoint3d *, dpoint3d *);
 extern long loaddta (const char *, dpoint3d *, dpoint3d *, dpoint3d *, dpoint3d *);
@@ -197,22 +164,10 @@ extern long surroundcapture32bit (dpoint3d *, const char *, long);
 
 	//Sprite related functions:
 extern kv6data *getkv6 (const char *);
-extern kfatype *getkfa (const char *);
 extern void freekv6 (kv6data *kv6);
 extern void savekv6 (const char *, kv6data *);
-extern void getspr (vx5sprite *, const char *);
 extern kv6data *genmipkv6 (kv6data *);
 extern char *getkfilname (long);
-extern void animsprite (vx5sprite *, long);
-extern void drawsprite (vx5sprite *);
-extern long meltsphere (vx5sprite *, lpoint3d *, long);
-extern long meltspans (vx5sprite *, vspans *, long, lpoint3d *);
-extern void sprdrawwound(vx5sprite *spr, long point_x, long point_y, long point_z, int hole_radius, int blood_radius);
-extern void sprdrawbullethole(vx5sprite *spr, long point_x, long point_y, long point_z);
-extern void sprcolorizecube(vx5sprite *spr, long x, long y, long z, long color);
-extern void sprinsertcube(vx5sprite *spr, long point_x, long point_y, long point_z, long color, long vis = 63);
-kv6voxtype *sprgetcube(vx5sprite *spr, long point_x, long point_y, long point_z);
-extern void sprclearcube(vx5sprite *spr, long x, long y, long z, long remcolor);
 extern void equiind2vec (long i, float *x, float *y, float *z);
 
 	//Physics helper functions:
@@ -224,7 +179,6 @@ extern void axisrotate (point3d *, point3d *, float);
 extern void slerp (point3d *, point3d *, point3d *, point3d *, point3d *, point3d *, point3d *, point3d *, point3d *, float);
 extern long cansee (point3d *, point3d *, lpoint3d *);
 extern void hitscan (dpoint3d *, dpoint3d *, lpoint3d *, long **, long *);
-extern void sprhitscan (dpoint3d *, dpoint3d *, vx5sprite *, lpoint3d *, kv6voxtype **, long *hitdir, float *vsc);
 extern double findmaxcr (double, double, double, double);
 extern void clipmove (dpoint3d *, dpoint3d *, double);
 extern long triscan (point3d *, point3d *, point3d *, point3d *, lpoint3d *);
@@ -249,7 +203,6 @@ extern void settri (point3d *, point3d *, point3d *, long);
 extern void setsector (point3d *, long *, long, float, long, long);
 extern void setspans (vspans *, long, lpoint3d *, long);
 extern void setheightmap (const unsigned char *, long, long, long, long, long, long, long);
-extern void setkv6 (vx5sprite *, long);
 
 	//VXL writing functions (slow or buggy):
 extern void sethull3d (point3d *, long, long, long);
@@ -271,7 +224,6 @@ extern void updatelighting (long, long, long, long, long, long);
 extern void checkfloatinbox (long, long, long, long, long, long);
 extern void startfalls ();
 extern void dofall (long);
-extern long meltfall (vx5sprite *, long, long);
 extern void finishfalls ();
 
 	//Procedural texture functions:
