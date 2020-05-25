@@ -22,12 +22,12 @@
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <inttypes.h>
 #else
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
-#include <conio.h>
-#include <dos.h>
+#include <inttypes.h>
 #define MAX_PATH 260
 #endif
 #include <stdlib.h>
@@ -125,7 +125,7 @@ char *bacsptr[262144];
 #define LOGFLASHVANG 9
 static lpoint2d gfc[(1<<LOGFLASHVANG)*8];
 static long gfclookup[8] = {4,7,2,5,0,3,6,1}, flashcnt = 0;
-__int64 flashbrival;
+int64_t flashbrival;
 
 	//Norm flash variables
 #define GSIZ 512  //NOTE: GSIZ should be 1<<x, and must be <= 65536
