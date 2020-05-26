@@ -407,6 +407,18 @@ static _inline void clearbuf (void *d, long c, long a)
 
 #else
 #pragma message ("Compiler says it isn't Visual C.")
+
+
+static _inline void ftol(float f, long *a)
+{
+	__asm__
+	{
+		mov eax, a
+			fld f
+			fistp dword ptr[eax]
+	}
+}
+
 #endif
 
 	//if (a < 0) return(0); else if (a > b) return(b); else return(a);
