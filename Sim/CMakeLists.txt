@@ -48,13 +48,13 @@ include_directories("../../PyCAD")
 
 # this defines the source-files for library
 set(SIM_SRC
-    kplib.cpp
-    PythonStuff.cpp
-    SolidView.cpp
+#    kplib.cpp
+#    PythonStuff.cpp
+#    SolidView.cpp
     v5.asm
-    VoxelCut.cpp
-    voxlap5.cpp
-    winmain.cpp
+#    VoxelCut.cpp
+#    voxlap5.cpp
+#    winmain.cpp
 )
 
 
