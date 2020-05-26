@@ -59,6 +59,8 @@ set(SIM_SRC
 #    winmain.cpp
 )
 
+set_source_files_properties(v5.asm PROPERTIES COMPILE_FLAGS "-x assembler-with-cpp")
+
 
 # this defines the headers
 if(DEFINED INCLUDE_INSTALL_DIR)
