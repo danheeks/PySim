@@ -59,6 +59,7 @@ set(SIM_SRC
 #    winmain.cpp
 )
 
+set_source_files_properties(v5.asm PROPERTIES COMPILE_FLAGS "-x assembler-with-cpp")
 set_source_files_properties(v5.asm PROPERTIES LANGUAGE ASM)
 
 
