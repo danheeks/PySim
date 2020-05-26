@@ -46,6 +46,8 @@ endif (NOT WIN32)
 
 include_directories("../../PyCAD")
 
+enable_language(C ASM)
+
 # this defines the source-files for library
 set(SIM_SRC
 #    kplib.cpp
