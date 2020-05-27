@@ -40,9 +40,9 @@ EXTERN _skylat:dword   ;long[_skyxsiz] : latitude's unit dir. vector
 ;EXTERN _remm: dword  ;long[16]
 
 CODE SEGMENT PUBLIC USE32 'CODE'
-ASSUME cs:CODE,ds:CODE
+;ASSUME cs:CODE,ds:CODE
 
-PUBLIC _v5_asm_dep_unlock ;Data Execution Prevention unlock (works under XP2 SP2)
+;PUBLIC _v5_asm_dep_unlock ;Data Execution Prevention unlock (works under XP2 SP2)
 _v5_asm_dep_unlock:
 	EXTERN __imp__VirtualProtect@16:NEAR
 	sub esp, 4
@@ -54,7 +54,7 @@ _v5_asm_dep_unlock:
 	sub eax, _v5_asm_dep_unlock
 	push eax
 	
-	push offset _v5_asm_dep_unlock
+	push _v5_asm_dep_unlock
 	call dword ptr __imp__VirtualProtect@16
 	add esp, 4
 	ret
@@ -157,15 +157,15 @@ _grouscanasm:
 		;      2048-4095  c and ce always sit in this range ((esp = c) <= ce)
 		;      4096-6143  This is where memory for cfasm is actually stored!
 		;      6144-8191  (memory never used - this seems unnecessary?)
-	mov esp, offset _cfasm[2048]
-	mov eax, offset _cfasm[4096]
+	mov esp, _cfasm[2048]
+	mov eax, _cfasm[4096]
 	mov ecx, [eax+8]
 	mov edx, [eax+12]
 	movq mm0, [eax+16]
 	movq mm1, [eax+24]
 	mov dword ptr ce, esp
 
-	mov gylookoff, offset _gylookup
+	mov gylookoff, _gylookup
 	mov byte ptr gmipcnt, 0
 
 	mov ebp, _gxmax
@@ -355,7 +355,7 @@ enddrawflor:
 	mov ebx, esp
 afterdelete:
 	sub esp, 32
-	cmp esp, offset _cfasm[2048]
+	cmp esp, _cfasm[2048]
 	jae skipixy
 
 	movq mm4, qword ptr _gcsub[ebp*8]
@@ -479,7 +479,7 @@ begsearchi:
 	mov eax, ce            ;ce++;
 	add eax, 32
 
-	cmp eax, offset _cfasm[4096] ;VERY BAD!!! - Interrupt would overwrite data!
+	cmp eax, _cfasm[4096] ;VERY BAD!!! - Interrupt would overwrite data!
 	ja retsub                    ;Just in case, return early to prevent lockup.
 
 	mov dword ptr ce, eax
@@ -523,7 +523,7 @@ remiporend:
 	jge startsky
 	mov gmipcnt, al
 
-	sub esi, offset _sptr
+	sub esi, _sptr
 
 	mov eax, esi
 	shl eax, 29
@@ -571,7 +571,7 @@ skipremip1:
 
 	sar _gixy[4], 1
 
-	mov eax, offset _cfasm[2048]
+	mov eax, _cfasm[2048]
 startremip0:
 	shr dword ptr [eax+8+2048], 1
 	inc dword ptr [eax+12+2048]
@@ -611,7 +611,7 @@ skipngxmax2:
 	jmp skipixy2
 
 startsky:
-	mov esp, offset _cfasm[2048]
+	mov esp, _cfasm[2048]
 	cmp esp, ce
 	ja retsub
 	mov esi, _skyoff
@@ -699,7 +699,7 @@ predeletez:
 deletez:
 	mov ebx, ce
 	sub ebx, 32
-	cmp ebx, offset _cfasm[2048]
+	cmp ebx, _cfasm[2048]
 	jb retsub          ;nothing to fill - skip remiporend stuff!
 	mov dword ptr ce, ebx
 
