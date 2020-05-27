@@ -412,13 +412,13 @@ intoslabloop:
 		;(ecx and edx are free registers at this point)
 
 	mov edx, [eax+4]             ;col = (long)c->i1;
-	movzx eax, db [edi+2]  ;dax = c->cx1; day = c->cy1;
-	movd mm3, dd [ebx+eax*4+4]      ;mm3: [ 0   0   0  -gy]
+	movzx eax, [edi+2]  ;dax = c->cx1; day = c->cy1;
+	movd mm3, [ebx+eax*4+4]      ;mm3: [ 0   0   0  -gy]
 	por mm3, mm6                 ;mm3: [ gx  0  ogx -gy]
 
 		;WARNING: NEW CODE!!!!!!!
 prebegsearchi16:
-	movq mm7, dq _gi
+	movq mm7, [_gi]
 	pslld mm7, 4
 	movq mm5, mm1
 	psubd mm5, mm7             ;mm7: [day.... dax....]
@@ -428,7 +428,7 @@ prebegsearchi16:
 	test eax, eax              ;if (day*ogx ? gy*dax)
 	jle begsearchi
 	movq mm1, mm5
-	sub edx, 16 SHL 3
+	sub edx, 16 << 3
 	jmp prebegsearchi16
 
 	jmp begsearchi
