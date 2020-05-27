@@ -163,13 +163,13 @@ _grouscanasm:
 	mov edx, [eax+12]
 	movq mm0, [eax+16]
 	movq mm1, [eax+24]
-	mov dd ce, esp
+	mov [ce], esp
 
 	mov gylookoff, _gylookup
-	mov db gmipcnt, 0
+	mov [gmipcnt], 0
 
 	mov ebp, _gxmax
-	cmp db _gmipnum, 1
+	cmp [_gmipnum], 1
 	jle short skipngxmax0
 	cmp ebp, _gxmip
 	jle short skipngxmax0
@@ -177,8 +177,8 @@ _grouscanasm:
 skipngxmax0:
 	mov ngxmax, ebp
 
-	mov ebp, _gpz[4]
-	sub ebp, _gpz[0]
+	mov ebp, [_gpz + 4]
+	sub ebp, [_gpz + 0]
 	shr ebp, 31
 	movd mm6, _gpz[ebp*4]        ;update gx in mm6
 	pand mm6, dq mmask
