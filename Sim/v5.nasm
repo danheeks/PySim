@@ -149,7 +149,7 @@ _grouscanasm:
 	push esi
 	push edi
 	push ebp
-	mov dd [espbak], esp
+	mov [espbak], esp
 
 	mov edi, eax
 
@@ -163,7 +163,7 @@ _grouscanasm:
 	mov edx, [eax+12]
 	movq mm0, [eax+16]
 	movq mm1, [eax+24]
-	mov dd [ce], esp
+	mov dd ce, esp
 
 	mov gylookoff, _gylookup
 	mov db gmipcnt, 0
