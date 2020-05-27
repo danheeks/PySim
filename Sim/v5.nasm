@@ -913,8 +913,8 @@ _drawboundcube3dn:
 	movq mm1, [_caddasm+edi]
 	pfadd mm0, mm6              ;mm0: [   y0    x0]
 	pfadd mm1, mm6              ;mm1: [   y1    x1]
-	movd mm5, _caddasm[ebx+8]
-	punpckldq mm5, _caddasm[edi+8]
+	movd mm5, [_caddasm+ebx+8]
+	punpckldq mm5, [_caddasm+edi+8]
 	pfadd mm5, mm7              ;mm5: [   z1    z0]
 	pfrcp mm4, mm5              ;mm4: [ 1/z0  1/z0]
 	punpckhdq mm5, mm5          ;mm5: [   z1    z1]
@@ -925,14 +925,14 @@ _drawboundcube3dn:
 	pf2id mm1, mm1              ;mm1: [  sy1   sx1]
 	packssdw mm0, mm1           ;mm0: [sy1 sx1 sy0 sx0]
 
-	movzx ebx, db [ecx+3]
-	movzx edi, db [ecx+4]
-	movq mm2, dq _caddasm[ebx]
-	movq mm3, dq _caddasm[edi]
+	movzx ebx, [ecx+3]
+	movzx edi, [ecx+4]
+	movq mm2, [_caddasm+ebx]
+	movq mm3, [_caddasm+edi]
 	pfadd mm2, mm6              ;mm2: [   y2    x2]
 	pfadd mm3, mm6              ;mm3: [   y3    x3]
-	movd mm5, _caddasm[ebx+8]
-	punpckldq mm5, _caddasm[edi+8]
+	movd mm5, [_caddasm+ebx+8]
+	punpckldq mm5, [_caddasm+edi+8]
 	pfadd mm5, mm7              ;mm5: [   z3    z2]
 	pfrcp mm4, mm5              ;mm4: [ 1/z2  1/z2]
 	punpckhdq mm5, mm5          ;mm5: [   z3    z3]
@@ -947,17 +947,17 @@ _drawboundcube3dn:
 	pminsw mm0, mm2             ;mm0: [sy1 sx1 sy0 sx0] <-min
 	pmaxsw mm1, mm2             ;mm1: [sy1 sx1 sy0 sx0] <-max
 
-	cmp db [ecx], 4
+	cmp [ecx], 4
 	je short bcskip6case_3dn
 
-	movzx ebx, db [ecx+5]
-	movzx edi, db [ecx+6]
-	movq mm2, dq _caddasm[ebx]
-	movq mm3, dq _caddasm[edi]
+	movzx ebx, [ecx+5]
+	movzx edi, [ecx+6]
+	movq mm2, [_caddasm+ebx]
+	movq mm3, [_caddasm+edi]
 	pfadd mm2, mm6              ;mm2: [   y4    x4]
 	pfadd mm3, mm6              ;mm3: [   y5    x5]
-	movd mm5, _caddasm[ebx+8]
-	punpckldq mm5, _caddasm[edi+8]
+	movd mm5, [_caddasm+ebx+8]
+	punpckldq mm5, [_caddasm+edi+8]
 	pfadd mm5, mm7              ;mm5: [   z5    z4]
 	pfrcp mm4, mm5              ;mm4: [ 1/z4  1/z4]
 	punpckhdq mm5, mm5          ;mm5: [   z5    z5]
@@ -993,9 +993,9 @@ bcskip6case_3dn:
 	sub ebx, 65536              ;                           Ý
 	jc short retboundcube_3dn   ;                           Ý
 
-	movzx edi, db [eax+7]
+	movzx edi, [eax+7]
 	punpcklbw mm5, [eax]
-	pmulhuw mm5, _kv6colmul[edi*8]
+	pmulhuw mm5, [_kv6colmul+edi*8]
 	paddw mm5, _kv6coladd
 	packuswb mm5, mm5
 	movd edi, mm0               ; edi: offs
@@ -1014,7 +1014,7 @@ begstosb_3dn:
 	movd edx, mm0
 	test edx, edx
 	jnz short skipdrawpix_3dn
-	movd dd [eax+ecx*4], mm7
+	movd [eax+ecx*4], mm7
 	movd dd [edi+ecx*4], mm5
 skipdrawpix_3dn:
 	inc ecx
@@ -1033,5 +1033,5 @@ retboundcube_3dn:
 	ret
 
 _dep_protect_end:
-CODE ENDS
-END
+;CODE ENDS
+;END
