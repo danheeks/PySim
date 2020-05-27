@@ -214,14 +214,14 @@ loop1: ;if (dmulrethigh(gylookup[edx*4],c->cx1,c->cy1,ogx) >= 0) jmp endloop1
 	movd eax, mm7
 	test eax, eax              ;if (cy1*ogx ? gy*cx1)
 	jle endloop1
-	psubd mm1, dq _gi
+	psubd mm1, [_gi]
 	movntq [ebx], mm5
 	sub ebx, 8
 	cmp ebx, [esp+2048]
 	jnb loop1
 	jmp predeletez
 endloop1:
-	movzx eax, db [edi+1]
+	movzx eax, [edi+1]
 	cmp eax, edx
 	jne loop0
 	mov [esp+4+2048], ebx
@@ -231,7 +231,7 @@ drawcwall:
 	mov edx, eax
 	je predrawflor
 
-	movzx eax, db [edi+3]
+	movzx eax, [edi+3]
 	cmp eax, ecx
 	jle predrawceil
 	mov ebx, [esp+2048]
@@ -241,7 +241,7 @@ loop2:
 	inc ecx
 	punpcklbw mm5, [edi+eax*4]
 	mov eax, gylookoff
-	movd mm3, dd [eax+ecx*4] ;mm3: [ 0   0   0  -gy]
+	movd mm3, [eax+ecx*4] ;mm3: [ 0   0   0  -gy]
 	psubusb mm5, mm4
 	pshufw mm2, mm5, 0ffh
 	pmulhuw mm5, mm2
@@ -255,14 +255,14 @@ loop3: ;if (dmulrethigh(gylookup[ecx*4],c->cx0,c->cy0,ogx) < 0) jmp endloop3
 	movd eax, mm7
 	test eax, eax              ;if (cy0*ogx ? gy*cx0)
 	jg endloop3
-	paddd mm0, dq _gi
+	paddd mm0, [_gi]
 	movntq [ebx], mm5
 	add ebx, 8
 	cmp ebx, [esp+4+2048]
 	jna loop3
 	jmp predeletez
 endloop3:
-	movzx eax, db [edi+3]
+	movzx eax, [edi+3]
 	cmp eax, ecx
 	jne loop2
 	mov [esp+2048], ebx
@@ -272,7 +272,7 @@ predrawceil:
 	pshufw mm6, mm6, 04eh       ;swap hi & lo of mm6
 drawceil: ;if (dmulrethigh(gylookup[ecx*4],c->cx0,c->cy0,gx) < 0) jmp drawflor
 	mov eax, gylookoff
-	movd mm3, dd [eax+ecx*4] ;mm3: [ 0   0   0  -gy]
+	movd mm3, [eax+ecx*4] ;mm3: [ 0   0   0  -gy]
 	por mm3, mm6               ;mm3: [ogx  0   gx -gy]
 drawceilloop:
 	pshufw mm7, mm0, 0ddh      ;mm7: [cy0 cx0 cy0 cx0]
@@ -280,11 +280,11 @@ drawceilloop:
 	movd eax, mm7
 	test eax, eax              ;if (cy0*gx ? gy*cx0)
 	jg drawflor
-	paddd mm0, dq _gi
+	paddd mm0, [_gi]
 	mov eax, [esp+2048]
 
 	punpcklbw mm5, [edi-4]
-	psubusb mm5, dq _gcsub[16]
+	psubusb mm5, [_gcsub + 16]
 	pshufw mm2, mm5, 0ffh
 	pmulhuw mm5, mm2
 	psrlw mm5, 7
@@ -301,7 +301,7 @@ predrawflor:
 	pshufw mm6, mm6, 04eh       ;swap hi & lo of mm6
 drawflor: ;if (dmulrethigh(gylookup[edx*4],c->cx1,c->cy1,gx) >= 0) jmp enddrawflor
 	mov eax, gylookoff
-	movd mm3, dd [eax+edx*4] ;mm3: [ 0   0   0  -gy]
+	movd mm3, [eax+edx*4] ;mm3: [ 0   0   0  -gy]
 	por mm3, mm6               ;mm3: [ogx  0   gx -gy]
 drawflorloop:
 	pshufw mm7, mm1, 0ddh      ;mm7: [cy1 cx1 cy1 cx1]
@@ -309,11 +309,11 @@ drawflorloop:
 	movd eax, mm7
 	test eax, eax              ;if (cy1*gx ? gy*cx1)
 	jle enddrawflor
-	psubd mm1, dq _gi
+	psubd mm1, [_gi]
 	mov eax, [esp+4+2048]
 
 	punpcklbw mm5, [edi+4]
-	psubusb mm5, dq _gcsub[24]
+	psubusb mm5, [_gcsub + 24]
 	pshufw mm2, mm5, 0ffh
 	pmulhuw mm5, mm2
 	psrlw mm5, 7
@@ -330,23 +330,23 @@ enddrawflor:
 	mov ebx, esp
 afterdelete:
 	sub esp, 32
-	cmp esp, _cfasm[2048]
+	cmp esp, [_cfasm + 2048]
 	jae skipixy
 
-	movq mm4, dq _gcsub[ebp*8]
-	add esi, _gixy[ebp*4]
-	mov ebp, _gpz[4]
+	movq mm4, [_gcsub + ebp*8]
+	add esi, [_gixy + ebp*4]
+	mov ebp, [_gpz + 4]
 	mov edi, [esi]
-	sub ebp, _gpz[0]
+	sub ebp, [_gpz + 0]
 	shr ebp, 31
-	mov eax, _gpz[ebp*4]
+	mov eax, [_gpz + ebp*4]
 	movd mm7, eax
 	punpckldq mm6, mm7
-	pand mm6, dq mmask
+	pand mm6, [mmask]
 	cmp eax, ngxmax
 	ja remiporend
-	add eax, _gdz[ebp*4]
-	mov _gpz[ebp*4], eax
+	add eax, [_gdz + ebp*4]
+	mov [_gpz + ebp*4], eax
 	mov esp, ce
 	jmp skipixy2
 
@@ -368,32 +368,32 @@ skipixy2:
 skipixy3:
 
 		;Find highest intersecting vbuf slab
-	cmp db [edi], 0
+	cmp [edi], 0
 	je drawfwall
 	mov ebx, gylookoff
 	jmp intoslabloop
 findslabloop:
 	lea edi, [edi+eax*4]
-	cmp db [edi], 0
+	cmp [edi], 0
 	je drawfwall
 intoslabloop:
-	movzx eax, db [edi+2]
+	movzx eax, [edi+2]
 		;if (dmulrethigh(gylookup[[edi+2]*4+4],c->cx0,c->cy0,ogx) >= 0)
 		;   jmp findslabloopbreak
-	movd mm3, dd [ebx+eax*4+4]    ;mm3: [ 0   0   0  -gy]
+	movd mm3, [ebx+eax*4+4]    ;mm3: [ 0   0   0  -gy]
 	por mm3, mm6               ;mm3: [ gx  0  ogx -gy]
 	pshufw mm7, mm0, 0ddh      ;mm7: [cy0 cx0 cy0 cx0]
 	pmaddwd mm7, mm3           ;mm7: [ 0   0  -decide]
 	movd eax, mm7
 	test eax, eax              ;if (cy0*ogx ? ?y*cx0)
 
-	movzx eax, db [edi]
+	movzx eax, [edi]
 	jg findslabloop
 
 		;If next slab ALSO intersects, split _cfasm!
 		;if (dmulrethigh(v[v[0]*4+3],c->cx1,c->cy1,ogx) >= 0) jmp drawfwall
-	movzx eax, db [3+edi+eax*4]
-	movd mm3, dd [ebx+eax*4]      ;mm3: [ 0   0   0  -gy]
+	movzx eax, [3+edi+eax*4]
+	movd mm3, [ebx+eax*4]      ;mm3: [ 0   0   0  -gy]
 	por mm3, mm6               ;mm3: [ gx  0  ogx -gy]
 	pshufw mm7, mm1, 0ddh      ;mm7: [cy1 cx1 cy1 cx1]
 	pmaddwd mm7, mm3           ;mm7: [ 0   0  -decide]
