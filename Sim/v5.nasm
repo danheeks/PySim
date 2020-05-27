@@ -434,7 +434,7 @@ prebegsearchi16:
 	jmp begsearchi
 		;while (dmulrethigh(gylookup[v[2]+1],dax,day,ogx) < 0)
 prebegsearchi:
-	sub edx, 4 SHL 1             ;col -= 8;
+	sub edx, 4 << 1             ;col -= 8;
 	psubd mm1, dq _gi     ;dax -= gi[0]; day -= gi[1];
 begsearchi:
 	pshufw mm7, mm1, 0ddh      ;mm7: [day dax day dax]
@@ -489,7 +489,7 @@ remiporend:
 	sub esi, _sptr
 
 	mov eax, esi
-	shl eax, 29
+	eax << 29
 	xor eax, _gixy[0]
 	mov eax, _gdz[0]
 	js short skipbladd0
@@ -507,7 +507,7 @@ skipremip0:
 	mov eax, esi
 	mov cl, db gmipcnt
 	add cl, 18
-	shl eax, cl
+	eax << cl
 	xor eax, _gixy[4]
 	mov eax, _gdz[4]
 	js short skipbladd1
@@ -745,7 +745,7 @@ _drawboundcubesse:
 
 	movaps xmm7, _ztabasm[MAXZSIZ*16]
 	movzx edi, dw [eax+4]
-	shl edi, 4
+	edi << 4
 	addps xmm7, _ztabasm[edi]
 	movhlps xmm0, xmm7
 	ucomiss xmm0, _scisdist
@@ -896,7 +896,7 @@ _drawboundcube3dn:
 	movq mm6, dq _ztabasm[MAXZSIZ*16]
 	movq mm7, dq _ztabasm[MAXZSIZ*16+8]
 	movzx edi, dw [eax+4]
-	shl edi, 4
+	edi << 4
 	pfadd mm6, dq _ztabasm[edi]
 	pfadd mm7, dq _ztabasm[edi+8]
 	movq mm0, mm7
