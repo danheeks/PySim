@@ -55,11 +55,11 @@ _v5_asm_dep_unlock:
 	push eax
 	
 	push _v5_asm_dep_unlock
-	call dd __imp__VirtualProtect@16
+	call __imp__VirtualProtect@16
 	add esp, 4
 	ret
 
-PUBLIC _cfasm, _skycast
+;PUBLIC _cfasm, _skycast
 ALIGN 16
 _cfasm db 256*32 dup(0)
 w8bmask0 dq 000ff00ff00ff00ffh
