@@ -164,7 +164,7 @@ _grouscanasm:
 	movq mm1, [eax+24]
 	mov [ce], esp
 
-	mov [gylookoff], dd _gylookup
+	mov dd [gylookoff], _gylookup
 	mov [gmipcnt], 0
 
 	mov ebp, _gxmax
