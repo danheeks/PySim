@@ -61,7 +61,7 @@ _v5_asm_dep_unlock:
 
 ;PUBLIC _cfasm, _skycast
 ALIGN 16
-_cfasm db 256*32 dup(0)
+_cfasm: db 256*32 dup(0)
 w8bmask0 dq 000ff00ff00ff00ffh
 w8bmask1 dq 000f000f000f000f0h
 w8bmask2 dq 000e000e000e000e0h
