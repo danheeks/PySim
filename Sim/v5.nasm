@@ -61,7 +61,7 @@ _v5_asm_dep_unlock:
 
 ;PUBLIC _cfasm, _skycast
 ALIGN 16
-_cfasm: db 256*32 dup(0)
+_cfasm: TIMES 256*32 db 0
 w8bmask0 dq 000ff00ff00ff00ffh
 w8bmask1 dq 000f000f000f000f0h
 w8bmask2 dq 000e000e000e000e0h
@@ -756,17 +756,17 @@ PUBLIC _opti4asm, _caddasm, _ztabasm, _scisdist, _kv6colmul, _kv6coladd
 PUBLIC _qsum0, _qsum1, _qbplbpp, _kv6frameplace, _kv6bytesperline
 
 ALIGN 16
-_opti4asm dd 5*4 dup(0)        ;NOTE: this used by ?render
-_caddasm dd 8*4 dup(0)
-_ztabasm dd (MAXZSIZ+3)*4 dup(0)
-_scisdist dd 40800000h,0,0,0
-_kv6colmul dq 256 dup(0)
-_kv6coladd dq 0
-_qsum0 dq 0   ;[8000h-hy,8000h-hx,8000h-hy,8000h-hx]
-_qsum1 dq 0   ;[8000h-fy,8000h-fx,8000h-fy,8000h-fx]
-_qbplbpp dq 0 ;[0,0,bpl,bpp]
-_kv6frameplace dd 0
-_kv6bytesperline dd 0
+_opti4asm: TIMES 5*4 dd 0        ;NOTE: this used by ?render
+_caddasm: TIMES 8*4 dd 0
+_ztabasm: TIMES (MAXZSIZ+3)*4 dd 0
+_scisdist: dd 40800000h,0,0,0
+_kv6colmul: TIMES dq 256 dq 0
+_kv6coladd: dq 0
+_qsum0: dq 0   ;[8000h-hy,8000h-hx,8000h-hy,8000h-hx]
+_qsum1: dq 0   ;[8000h-fy,8000h-fx,8000h-fy,8000h-fx]
+_qbplbpp: dq 0 ;[0,0,bpl,bpp]
+_kv6frameplace: dd 0
+_kv6bytesperline: dd 0
 
 PUBLIC _drawboundcubesseinit   ;Visual C entry point (pass by stack)
 _drawboundcubesseinit:
