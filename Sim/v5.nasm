@@ -180,10 +180,10 @@ skipngxmax0:
 	mov ebp, [_gpz + 4]
 	sub ebp, [_gpz + 0]
 	shr ebp, 31
-	movd mm6, _gpz[ebp*4]        ;update gx in mm6
-	pand mm6, dq mmask
-	mov eax, _gdz[ebp*4]
-	add _gpz[ebp*4], eax
+	movd mm6, [_gpz + ebp*4]        ;update gx in mm6
+	pand mm6, [mmask]
+	mov eax, [_gdz + ebp*4]
+	add [_gpz + ebp*4], eax
 
 	mov esi, _gpixy
 	cmp edi, [esi]
@@ -191,7 +191,7 @@ skipngxmax0:
 	jmp drawceil
 
 drawfwall:
-	movzx eax, db [edi+1]
+	movzx eax, [edi+1]
 	cmp eax, edx
 	jge drawcwall
 	mov ebx, [esp+4+2048]
@@ -201,7 +201,7 @@ loop0:
 	dec edx
 	punpcklbw mm5, [edi+eax*4]
 	mov eax, gylookoff
-	movd mm3, dd [eax+edx*4] ;mm3: [ 0   0   0  -gy]
+	movd mm3, [eax+edx*4] ;mm3: [ 0   0   0  -gy]
 	psubusb mm5, mm4
 	pshufw mm2, mm5, 0ffh
 	pmulhuw mm5, mm2
