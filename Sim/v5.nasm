@@ -537,8 +537,8 @@ skipremip1:
 	mov eax, [_cfasm+2048]
 startremip0:
 	shr [eax+8+2048], 1
-	inc dd [eax+12+2048]
-	shr dd [eax+12+2048], 1
+	inc [eax+12+2048]
+	shr [eax+12+2048], 1
 	add eax, 32
 	cmp eax, ce
 	jbe short startremip0
@@ -562,19 +562,19 @@ skipngxmax2:
 	shr edx, 1
 
 		;this makes grid transition clean
-	mov ebp, _gpz[4]
-	sub ebp, _gpz[0]
+	mov ebp, [_gpz+4]
+	sub ebp, [_gpz+0]
 	shr ebp, 31
-	mov eax, _gpz[ebp*4]
-	add eax, _gdz[ebp*4]
-	mov _gpz[ebp*4], eax
+	mov eax, [_gpz+ebp*4]
+	add eax, [_gdz+ebp*4]
+	mov [_gpz+ebp*4], eax
 	mov edi, [esi]
 
 	mov esp, ce
 	jmp skipixy2
 
 startsky:
-	mov esp, _cfasm[2048]
+	mov esp, [_cfasm+2048]
 	cmp esp, ce
 	ja retsub
 	mov esi, _skyoff
@@ -602,11 +602,11 @@ endnextloop:
 ;Sky loaded: do texture mapping ----------------------------------------------
 
 prestartskyloop:
-	movq dq [ebx+24+2048], mm1  ;Hack to make sure [cy0,cx0] is in memory for sky
+	movq [ebx+24+2048], mm1  ;Hack to make sure [cy0,cx0] is in memory for sky
 
 	mov esi, _skyoff
 	mov ecx, _skylat
-	movd mm5, dd _skycast[4]
+	movd mm5, [_skycast+4]
 	mov edi, _skyxsiz
 startskyloop:
 	mov eax, [esp+2048]
@@ -615,17 +615,17 @@ startskyloop:
 	ja short endskyslab
 	movq mm1, [esp+24+2048]    ;mm1: [cy1.... cx1....]
 preskysearch:
-	psubd mm1, dq _gi
+	psubd mm1, [_gi]
 skysearch:
 	pshufw mm7, mm1, 0ddh      ;mm7: [cy1 cx1 cy1 cx1]
-	movd mm3, dd [ecx+edi*4]      ;mm3: [       xvi -yvi]
+	movd mm3, [ecx+edi*4]      ;mm3: [       xvi -yvi]
 	pmaddwd mm7, mm3           ;mm7: [ 0   0  -decide]
 	movd edx, mm7
 	sar edx, 31
 	lea edi, [edi+edx]
 	jnz short skysearch        ;if (cy1*xvi ? -yvi*cx1)
 
-	movd mm6, dd [esi+edi*4]
+	movd mm6, [esi+edi*4]
 	punpckldq mm6, mm5
 	movntq [ebx], mm6
 	sub ebx, 8
@@ -640,7 +640,7 @@ endskyslab:
 
 retsub:
 	emms
-	mov esp, dd espbak
+	mov esp, [espbak]
 	pop ebp    ;Visual C's _cdecl requires EBX,ESI,EDI,EBP to be preserved
 	pop edi
 	pop esi
@@ -652,9 +652,9 @@ predeletez:
 deletez:
 	mov ebx, ce
 	sub ebx, 32
-	cmp ebx, _cfasm[2048]
+	cmp ebx, [_cfasm+2048]
 	jb retsub          ;nothing to fill - skip remiporend stuff!
-	mov dd ce, ebx
+	mov [ce], ebx
 
 	add ebx, 32
 
@@ -703,15 +703,15 @@ MAXZSIZ EQU 1024 ;WARNING: THIS IS BAD SINCE KV6 format supports up to 65535!
 EXTERN _zbufoff:dd
 EXTERN _ptfaces16:dd
 
-PUBLIC _opti4asm, _caddasm, _ztabasm, _scisdist, _kv6colmul, _kv6coladd
-PUBLIC _qsum0, _qsum1, _qbplbpp, _kv6frameplace, _kv6bytesperline
+;PUBLIC _opti4asm, _caddasm, _ztabasm, _scisdist, _kv6colmul, _kv6coladd
+;PUBLIC _qsum0, _qsum1, _qbplbpp, _kv6frameplace, _kv6bytesperline
 
 ALIGN 16
 _opti4asm: TIMES 5*4 dd 0        ;NOTE: this used by ?render
 _caddasm: TIMES 8*4 dd 0
 _ztabasm: TIMES (MAXZSIZ+3)*4 dd 0
 _scisdist: dd 40800000h,0,0,0
-_kv6colmul: TIMES dq 256 dq 0
+_kv6colmul: TIMES 256 dq 0
 _kv6coladd: dq 0
 _qsum0: dq 0   ;[8000h-hy,8000h-hx,8000h-hy,8000h-hx]
 _qsum1: dq 0   ;[8000h-fy,8000h-fx,8000h-fy,8000h-fx]
