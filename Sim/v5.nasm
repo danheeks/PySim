@@ -11,7 +11,7 @@ EXTERN _gdz      ;long[2]
 EXTERN _gxmip
 EXTERN _gxmax
 EXTERN _gcsub    ;long[4]
-EXTERN _gylookup ;long[256+4+128+4+...]
+EXTERN _gylookup:dd ;long[256+4+128+4+...]
 EXTERN _gmipnum
 ;EXTERN _cf : dd      ;{ long i0,i1,z0,z1,cx0,cy0,cx1,cy1; }[128]
 
