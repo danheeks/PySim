@@ -3,23 +3,23 @@
 
 LOGPREC EQU (8+12)
 
-EXTERN _gi:dd
-EXTERN _gpixy:dd
-EXTERN _gixy:dd     ;long[2]
-EXTERN _gpz:dd      ;long[2]
-EXTERN _gdz:dd      ;long[2]
-EXTERN _gxmip:dd
-EXTERN _gxmax:dd
-EXTERN _gcsub:dd    ;long[4]
-EXTERN _gylookup:dd ;long[256+4+128+4+...]
-EXTERN _gmipnum:dd
+EXTERN _gi
+EXTERN _gpixy
+EXTERN _gixy     ;long[2]
+EXTERN _gpz      ;long[2]
+EXTERN _gdz      ;long[2]
+EXTERN _gxmip
+EXTERN _gxmax
+EXTERN _gcsub    ;long[4]
+EXTERN _gylookup ;long[256+4+128+4+...]
+EXTERN _gmipnum
 ;EXTERN _cf : dd      ;{ long i0,i1,z0,z1,cx0,cy0,cx1,cy1; }[128]
 
-EXTERN _sptr:dd
+EXTERN _sptr
 
-EXTERN _skyoff:dd   ;Memory offset to start of longitude line
-EXTERN _skyxsiz:dd  ;Size of longitude line
-EXTERN _skylat:dd   ;long[_skyxsiz] : latitude's unit dir. vector
+EXTERN _skyoff   ;Memory offset to start of longitude line
+EXTERN _skyxsiz  ;Size of longitude line
+EXTERN _skylat   ;long[_skyxsiz] : latitude's unit dir. vector
 
 ;How to declare C-ASM shared variables in the ASM code:
 ;ASM:                    C:
@@ -38,12 +38,12 @@ EXTERN _skylat:dd   ;long[_skyxsiz] : latitude's unit dir. vector
 ;EXTERN _resp: dd
 ;EXTERN _remm: dd  ;long[16]
 
-CODE SEGMENT PUBLIC USE32 'CODE'
+;CODE SEGMENT PUBLIC USE32 'CODE'
 ;ASSUME cs:CODE,ds:CODE
 
 ;PUBLIC _v5_asm_dep_unlock ;Data Execution Prevention unlock (works under XP2 SP2)
 _v5_asm_dep_unlock:
-	EXTERN __imp__VirtualProtect@16:NEAR
+	EXTERN __imp__VirtualProtect@16
 	sub esp, 4
 	push esp
 	push 40h ;PAGE_EXECUTE_READWRITE
@@ -700,8 +700,8 @@ deleteloop:
 
 MAXZSIZ EQU 1024 ;WARNING: THIS IS BAD SINCE KV6 format supports up to 65535!
 
-EXTERN _zbufoff:dd
-EXTERN _ptfaces16:dd
+EXTERN _zbufoff
+EXTERN _ptfaces16
 
 ;PUBLIC _opti4asm, _caddasm, _ztabasm, _scisdist, _kv6colmul, _kv6coladd
 ;PUBLIC _qsum0, _qsum1, _qbplbpp, _kv6frameplace, _kv6bytesperline
