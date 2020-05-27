@@ -435,7 +435,7 @@ prebegsearchi16:
 		;while (dmulrethigh(gylookup[v[2]+1],dax,day,ogx) < 0)
 prebegsearchi:
 	sub edx, 4 << 1             ;col -= 8;
-	psubd mm1, dq _gi     ;dax -= gi[0]; day -= gi[1];
+	psubd mm1, [_gi]     ;dax -= gi[0]; day -= gi[1];
 begsearchi:
 	pshufw mm7, mm1, 0ddh      ;mm7: [day dax day dax]
 	pmaddwd mm7, mm3           ;mm7: [ 0   0  -decide]
@@ -446,10 +446,10 @@ begsearchi:
 	mov eax, ce            ;ce++;
 	add eax, 32
 
-	cmp eax, _cfasm[4096] ;VERY BAD!!! - Interrupt would overwrite data!
+	cmp eax, [_cfasm + 4096] ;VERY BAD!!! - Interrupt would overwrite data!
 	ja retsub                    ;Just in case, return early to prevent lockup.
 
-	mov dd ce, eax
+	mov [ce], eax
 	cmp eax, esp           ;for(c2=ce;c2>c;c2--)   //(c2 = eax)
 	jbe skipinsertloop
 beginsertloop:
@@ -466,10 +466,10 @@ beginsertloop:
 	ja beginsertloop
 skipinsertloop:
 
-	movzx eax, db [edi]
+	movzx eax, [edi]
 	movq mm7, mm1              ;c[1].cx1 = dax; c[1].cy1 = day;
-	paddd mm7, dq _gi
-	movzx eax, db [3+edi+eax*4]
+	paddd mm7, [_gi]
+	movzx eax, [3+edi+eax*4]
 	mov [esp+32+4+2048], edx        ;c[1].i1 = (long *)col;
 	add edx, 8                      ;c[0].i0 = (long *)(col+(4<<1));
 	mov [esp+2048], edx
@@ -482,14 +482,14 @@ skipinsertloop:
 remiporend:
 	mov al, gmipcnt
 	inc al
-	cmp al, db _gmipnum
+	cmp al, [_gmipnum]
 	jge startsky
 	mov gmipcnt, al
 
 	sub esi, _sptr
 
 	mov eax, esi
-	eax << 29
+	shl eax, 29
 	xor eax, _gixy[0]
 	mov eax, _gdz[0]
 	js short skipbladd0
@@ -507,7 +507,7 @@ skipremip0:
 	mov eax, esi
 	mov cl, db gmipcnt
 	add cl, 18
-	eax << cl
+	shl eax, cl
 	xor eax, _gixy[4]
 	mov eax, _gdz[4]
 	js short skipbladd1
@@ -745,7 +745,7 @@ _drawboundcubesse:
 
 	movaps xmm7, _ztabasm[MAXZSIZ*16]
 	movzx edi, dw [eax+4]
-	edi << 4
+	shl edi, 4
 	addps xmm7, _ztabasm[edi]
 	movhlps xmm0, xmm7
 	ucomiss xmm0, _scisdist
@@ -896,7 +896,7 @@ _drawboundcube3dn:
 	movq mm6, dq _ztabasm[MAXZSIZ*16]
 	movq mm7, dq _ztabasm[MAXZSIZ*16+8]
 	movzx edi, dw [eax+4]
-	edi << 4
+	shl edi, 4
 	pfadd mm6, dq _ztabasm[edi]
 	pfadd mm7, dq _ztabasm[edi+8]
 	movq mm0, mm7
