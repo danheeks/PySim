@@ -142,14 +142,14 @@ ALIGN 16
 	;edi: [..v[]..]     mm5: [??????? coltemp]
 	;ebp: [...bakj]     mm6: [gx. 0.. ogx 0..]
 	;esp: [..c->..]     mm7: [     temp      ]
-PUBLIC _grouscanasm ;Visual C entry point (passes parameters by stack)
+;PUBLIC _grouscanasm ;Visual C entry point (passes parameters by stack)
 _grouscanasm:
 	mov eax, [esp+4]
 	push ebx   ;Visual C's _cdecl requires EBX,ESI,EDI,EBP to be preserved
 	push esi
 	push edi
 	push ebp
-	mov dd espbak, esp
+	mov dd [espbak], esp
 
 	mov edi, eax
 
@@ -157,13 +157,13 @@ _grouscanasm:
 		;      2048-4095  c and ce always sit in this range ((esp = c) <= ce)
 		;      4096-6143  This is where memory for cfasm is actually stored!
 		;      6144-8191  (memory never used - this seems unnecessary?)
-	mov esp, _cfasm[2048]
-	mov eax, _cfasm[4096]
+	mov esp, [_cfasm + 2048]
+	mov eax, [_cfasm + 4096]
 	mov ecx, [eax+8]
 	mov edx, [eax+12]
 	movq mm0, [eax+16]
 	movq mm1, [eax+24]
-	mov dd ce, esp
+	mov dd [ce], esp
 
 	mov gylookoff, _gylookup
 	mov db gmipcnt, 0
