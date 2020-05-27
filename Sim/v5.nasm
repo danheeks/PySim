@@ -55,7 +55,7 @@ _v5_asm_dep_unlock:
 	push eax
 	
 	push _v5_asm_dep_unlock
-	call dd ptr __imp__VirtualProtect@16
+	call dd __imp__VirtualProtect@16
 	add esp, 4
 	ret
 
@@ -149,7 +149,7 @@ _grouscanasm:
 	push esi
 	push edi
 	push ebp
-	mov dd ptr espbak, esp
+	mov dd espbak, esp
 
 	mov edi, eax
 
@@ -163,13 +163,13 @@ _grouscanasm:
 	mov edx, [eax+12]
 	movq mm0, [eax+16]
 	movq mm1, [eax+24]
-	mov dd ptr ce, esp
+	mov dd ce, esp
 
 	mov gylookoff, _gylookup
-	mov db ptr gmipcnt, 0
+	mov db gmipcnt, 0
 
 	mov ebp, _gxmax
-	cmp db ptr _gmipnum, 1
+	cmp db _gmipnum, 1
 	jle short skipngxmax0
 	cmp ebp, _gxmip
 	jle short skipngxmax0
@@ -181,7 +181,7 @@ skipngxmax0:
 	sub ebp, _gpz[0]
 	shr ebp, 31
 	movd mm6, _gpz[ebp*4]        ;update gx in mm6
-	pand mm6, dq ptr mmask
+	pand mm6, dq mmask
 	mov eax, _gdz[ebp*4]
 	add _gpz[ebp*4], eax
 
@@ -191,7 +191,7 @@ skipngxmax0:
 	jmp drawceil
 
 drawfwall:
-	movzx eax, db ptr [edi+1]
+	movzx eax, db [edi+1]
 	cmp eax, edx
 	jge drawcwall
 	mov ebx, [esp+4+2048]
@@ -201,7 +201,7 @@ loop0:
 	dec edx
 	punpcklbw mm5, [edi+eax*4]
 	mov eax, gylookoff
-	movd mm3, dd ptr [eax+edx*4] ;mm3: [ 0   0   0  -gy]
+	movd mm3, dd [eax+edx*4] ;mm3: [ 0   0   0  -gy]
 	psubusb mm5, mm4
 	pshufw mm2, mm5, 0ffh
 	pmulhuw mm5, mm2
@@ -217,7 +217,7 @@ loop1: ;if (dmulrethigh(gylookup[edx*4],c->cx1,c->cy1,ogx) >= 0) jmp endloop1
 	movd eax, mm7
 	test eax, eax              ;if (cy1*ogx ? gy*cx1)
 	jle endloop1
-	psubd mm1, dq ptr _gi
+	psubd mm1, dq _gi
 ifdef USEZBUFFER
 	movntq [ebx], mm5
 	sub ebx, 8
@@ -229,7 +229,7 @@ endif
 	jnb loop1
 	jmp predeletez
 endloop1:
-	movzx eax, db ptr [edi+1]
+	movzx eax, db [edi+1]
 	cmp eax, edx
 	jne loop0
 	mov [esp+4+2048], ebx
@@ -239,7 +239,7 @@ drawcwall:
 	mov edx, eax
 	je predrawflor
 
-	movzx eax, db ptr [edi+3]
+	movzx eax, db [edi+3]
 	cmp eax, ecx
 	jle predrawceil
 	mov ebx, [esp+2048]
@@ -249,7 +249,7 @@ loop2:
 	inc ecx
 	punpcklbw mm5, [edi+eax*4]
 	mov eax, gylookoff
-	movd mm3, dd ptr [eax+ecx*4] ;mm3: [ 0   0   0  -gy]
+	movd mm3, dd [eax+ecx*4] ;mm3: [ 0   0   0  -gy]
 	psubusb mm5, mm4
 	pshufw mm2, mm5, 0ffh
 	pmulhuw mm5, mm2
@@ -265,7 +265,7 @@ loop3: ;if (dmulrethigh(gylookup[ecx*4],c->cx0,c->cy0,ogx) < 0) jmp endloop3
 	movd eax, mm7
 	test eax, eax              ;if (cy0*ogx ? gy*cx0)
 	jg endloop3
-	paddd mm0, dq ptr _gi
+	paddd mm0, dq _gi
 ifdef USEZBUFFER
 	movntq [ebx], mm5
 	add ebx, 8
@@ -277,7 +277,7 @@ endif
 	jna loop3
 	jmp predeletez
 endloop3:
-	movzx eax, db ptr [edi+3]
+	movzx eax, db [edi+3]
 	cmp eax, ecx
 	jne loop2
 	mov [esp+2048], ebx
@@ -287,7 +287,7 @@ predrawceil:
 	pshufw mm6, mm6, 04eh       ;swap hi & lo of mm6
 drawceil: ;if (dmulrethigh(gylookup[ecx*4],c->cx0,c->cy0,gx) < 0) jmp drawflor
 	mov eax, gylookoff
-	movd mm3, dd ptr [eax+ecx*4] ;mm3: [ 0   0   0  -gy]
+	movd mm3, dd [eax+ecx*4] ;mm3: [ 0   0   0  -gy]
 	por mm3, mm6               ;mm3: [ogx  0   gx -gy]
 drawceilloop:
 	pshufw mm7, mm0, 0ddh      ;mm7: [cy0 cx0 cy0 cx0]
@@ -295,11 +295,11 @@ drawceilloop:
 	movd eax, mm7
 	test eax, eax              ;if (cy0*gx ? gy*cx0)
 	jg drawflor
-	paddd mm0, dq ptr _gi
+	paddd mm0, dq _gi
 	mov eax, [esp+2048]
 
 	punpcklbw mm5, [edi-4]
-	psubusb mm5, dq ptr _gcsub[16]
+	psubusb mm5, dq _gcsub[16]
 	pshufw mm2, mm5, 0ffh
 	pmulhuw mm5, mm2
 	psrlw mm5, 7
@@ -321,7 +321,7 @@ predrawflor:
 	pshufw mm6, mm6, 04eh       ;swap hi & lo of mm6
 drawflor: ;if (dmulrethigh(gylookup[edx*4],c->cx1,c->cy1,gx) >= 0) jmp enddrawflor
 	mov eax, gylookoff
-	movd mm3, dd ptr [eax+edx*4] ;mm3: [ 0   0   0  -gy]
+	movd mm3, dd [eax+edx*4] ;mm3: [ 0   0   0  -gy]
 	por mm3, mm6               ;mm3: [ogx  0   gx -gy]
 drawflorloop:
 	pshufw mm7, mm1, 0ddh      ;mm7: [cy1 cx1 cy1 cx1]
@@ -329,11 +329,11 @@ drawflorloop:
 	movd eax, mm7
 	test eax, eax              ;if (cy1*gx ? gy*cx1)
 	jle enddrawflor
-	psubd mm1, dq ptr _gi
+	psubd mm1, dq _gi
 	mov eax, [esp+4+2048]
 
 	punpcklbw mm5, [edi+4]
-	psubusb mm5, dq ptr _gcsub[24]
+	psubusb mm5, dq _gcsub[24]
 	pshufw mm2, mm5, 0ffh
 	pmulhuw mm5, mm2
 	psrlw mm5, 7
@@ -358,7 +358,7 @@ afterdelete:
 	cmp esp, _cfasm[2048]
 	jae skipixy
 
-	movq mm4, dq ptr _gcsub[ebp*8]
+	movq mm4, dq _gcsub[ebp*8]
 	add esi, _gixy[ebp*4]
 	mov ebp, _gpz[4]
 	mov edi, [esi]
@@ -367,7 +367,7 @@ afterdelete:
 	mov eax, _gpz[ebp*4]
 	movd mm7, eax
 	punpckldq mm6, mm7
-	pand mm6, dq ptr mmask
+	pand mm6, dq mmask
 	cmp eax, ngxmax
 	ja remiporend
 	add eax, _gdz[ebp*4]
@@ -393,32 +393,32 @@ skipixy2:
 skipixy3:
 
 		;Find highest intersecting vbuf slab
-	cmp db ptr [edi], 0
+	cmp db [edi], 0
 	je drawfwall
 	mov ebx, gylookoff
 	jmp intoslabloop
 findslabloop:
 	lea edi, [edi+eax*4]
-	cmp db ptr [edi], 0
+	cmp db [edi], 0
 	je drawfwall
 intoslabloop:
-	movzx eax, db ptr [edi+2]
+	movzx eax, db [edi+2]
 		;if (dmulrethigh(gylookup[[edi+2]*4+4],c->cx0,c->cy0,ogx) >= 0)
 		;   jmp findslabloopbreak
-	movd mm3, dd ptr [ebx+eax*4+4]    ;mm3: [ 0   0   0  -gy]
+	movd mm3, dd [ebx+eax*4+4]    ;mm3: [ 0   0   0  -gy]
 	por mm3, mm6               ;mm3: [ gx  0  ogx -gy]
 	pshufw mm7, mm0, 0ddh      ;mm7: [cy0 cx0 cy0 cx0]
 	pmaddwd mm7, mm3           ;mm7: [ 0   0  -decide]
 	movd eax, mm7
 	test eax, eax              ;if (cy0*ogx ? ?y*cx0)
 
-	movzx eax, db ptr [edi]
+	movzx eax, db [edi]
 	jg findslabloop
 
 		;If next slab ALSO intersects, split _cfasm!
 		;if (dmulrethigh(v[v[0]*4+3],c->cx1,c->cy1,ogx) >= 0) jmp drawfwall
-	movzx eax, db ptr [3+edi+eax*4]
-	movd mm3, dd ptr [ebx+eax*4]      ;mm3: [ 0   0   0  -gy]
+	movzx eax, db [3+edi+eax*4]
+	movd mm3, dd [ebx+eax*4]      ;mm3: [ 0   0   0  -gy]
 	por mm3, mm6               ;mm3: [ gx  0  ogx -gy]
 	pshufw mm7, mm1, 0ddh      ;mm7: [cy1 cx1 cy1 cx1]
 	pmaddwd mm7, mm3           ;mm7: [ 0   0  -decide]
@@ -437,13 +437,13 @@ intoslabloop:
 		;(ecx and edx are free registers at this point)
 
 	mov edx, [eax+4]             ;col = (long)c->i1;
-	movzx eax, db ptr [edi+2]  ;dax = c->cx1; day = c->cy1;
-	movd mm3, dd ptr [ebx+eax*4+4]      ;mm3: [ 0   0   0  -gy]
+	movzx eax, db [edi+2]  ;dax = c->cx1; day = c->cy1;
+	movd mm3, dd [ebx+eax*4+4]      ;mm3: [ 0   0   0  -gy]
 	por mm3, mm6                 ;mm3: [ gx  0  ogx -gy]
 
 		;WARNING: NEW CODE!!!!!!!
 prebegsearchi16:
-	movq mm7, dq ptr _gi
+	movq mm7, dq _gi
 	pslld mm7, 4
 	movq mm5, mm1
 	psubd mm5, mm7             ;mm7: [day.... dax....]
@@ -468,7 +468,7 @@ ifdef USEZBUFFER
 else
 	sub edx, 4                   ;col -= 4;
 endif
-	psubd mm1, dq ptr _gi     ;dax -= gi[0]; day -= gi[1];
+	psubd mm1, dq _gi     ;dax -= gi[0]; day -= gi[1];
 begsearchi:
 	pshufw mm7, mm1, 0ddh      ;mm7: [day dax day dax]
 	pmaddwd mm7, mm3           ;mm7: [ 0   0  -decide]
@@ -482,7 +482,7 @@ begsearchi:
 	cmp eax, _cfasm[4096] ;VERY BAD!!! - Interrupt would overwrite data!
 	ja retsub                    ;Just in case, return early to prevent lockup.
 
-	mov dd ptr ce, eax
+	mov dd ce, eax
 	cmp eax, esp           ;for(c2=ce;c2>c;c2--)   //(c2 = eax)
 	jbe skipinsertloop
 beginsertloop:
@@ -499,10 +499,10 @@ beginsertloop:
 	ja beginsertloop
 skipinsertloop:
 
-	movzx eax, db ptr [edi]
+	movzx eax, db [edi]
 	movq mm7, mm1              ;c[1].cx1 = dax; c[1].cy1 = day;
-	paddd mm7, dq ptr _gi
-	movzx eax, db ptr [3+edi+eax*4]
+	paddd mm7, dq _gi
+	movzx eax, db [3+edi+eax*4]
 	mov [esp+32+4+2048], edx        ;c[1].i1 = (long *)col;
 ifdef USEZBUFFER
 	add edx, 8                      ;c[0].i0 = (long *)(col+(4<<1));
@@ -519,7 +519,7 @@ endif
 remiporend:
 	mov al, gmipcnt
 	inc al
-	cmp al, db ptr _gmipnum
+	cmp al, db _gmipnum
 	jge startsky
 	mov gmipcnt, al
 
@@ -542,7 +542,7 @@ skipremip0:
 	mov [ebx+8+2048], ecx ;this is the official place to backup ecx
 
 	mov eax, esi
-	mov cl, db ptr gmipcnt
+	mov cl, db gmipcnt
 	add cl, 18
 	shl eax, cl
 	xor eax, _gixy[4]
@@ -559,13 +559,13 @@ skipremip1:
 
 	shr esi, 2
 	mov eax, esi
-	movzx ecx, db ptr gmipcnt
+	movzx ecx, db gmipcnt
 	and esi, gxmipk[ecx*4] ;mask for x (1:1024->512, etc...)
 	and eax, gymipk[ecx*4] ;mask for y (1:1024->512, etc...)
 	lea esi, [eax+esi*2]
 	add esi, gamipk[ecx*4] ;add offset (1:sptr+1024*1024*4, etc...)
 
-	movzx eax, db ptr gmipcnt
+	movzx eax, db gmipcnt
 	mov eax, gylut[eax*4]
 	mov gylookoff, eax
 
@@ -573,9 +573,9 @@ skipremip1:
 
 	mov eax, _cfasm[2048]
 startremip0:
-	shr dd ptr [eax+8+2048], 1
-	inc dd ptr [eax+12+2048]
-	shr dd ptr [eax+12+2048], 1
+	shr dd [eax+8+2048], 1
+	inc dd [eax+12+2048]
+	shr dd [eax+12+2048], 1
 	add eax, 32
 	cmp eax, ce
 	jbe short startremip0
@@ -644,11 +644,11 @@ endnextloop:
 ;Sky loaded: do texture mapping ----------------------------------------------
 
 prestartskyloop:
-	movq dq ptr [ebx+24+2048], mm1  ;Hack to make sure [cy0,cx0] is in memory for sky
+	movq dq [ebx+24+2048], mm1  ;Hack to make sure [cy0,cx0] is in memory for sky
 
 	mov esi, _skyoff
 	mov ecx, _skylat
-	movd mm5, dd ptr _skycast[4]
+	movd mm5, dd _skycast[4]
 	mov edi, _skyxsiz
 startskyloop:
 	mov eax, [esp+2048]
@@ -657,17 +657,17 @@ startskyloop:
 	ja short endskyslab
 	movq mm1, [esp+24+2048]    ;mm1: [cy1.... cx1....]
 preskysearch:
-	psubd mm1, dq ptr _gi
+	psubd mm1, dq _gi
 skysearch:
 	pshufw mm7, mm1, 0ddh      ;mm7: [cy1 cx1 cy1 cx1]
-	movd mm3, dd ptr [ecx+edi*4]      ;mm3: [       xvi -yvi]
+	movd mm3, dd [ecx+edi*4]      ;mm3: [       xvi -yvi]
 	pmaddwd mm7, mm3           ;mm7: [ 0   0  -decide]
 	movd edx, mm7
 	sar edx, 31
 	lea edi, [edi+edx]
 	jnz short skysearch        ;if (cy1*xvi ? -yvi*cx1)
 
-	movd mm6, dd ptr [esi+edi*4]
+	movd mm6, dd [esi+edi*4]
 ifdef USEZBUFFER
 	punpckldq mm6, mm5
 	movntq [ebx], mm6
@@ -687,7 +687,7 @@ endskyslab:
 
 retsub:
 	emms
-	mov esp, dd ptr espbak
+	mov esp, dd espbak
 	pop ebp    ;Visual C's _cdecl requires EBX,ESI,EDI,EBP to be preserved
 	pop edi
 	pop esi
@@ -701,7 +701,7 @@ deletez:
 	sub ebx, 32
 	cmp ebx, _cfasm[2048]
 	jb retsub          ;nothing to fill - skip remiporend stuff!
-	mov dd ptr ce, ebx
+	mov dd ce, ebx
 
 	add ebx, 32
 
@@ -771,14 +771,14 @@ _kv6bytesperline dd 0
 PUBLIC _drawboundcubesseinit   ;Visual C entry point (pass by stack)
 _drawboundcubesseinit:
 	mov eax, _kv6frameplace
-	mov dd ptr [bcmod0-4], eax
+	mov dd [bcmod0-4], eax
 	mov eax, _kv6bytesperline
-	mov dd ptr [bcmod3-4], eax
+	mov dd [bcmod3-4], eax
 ifdef USEZBUFFER
 	;mov eax, _kv6bytesperline
-	mov dd ptr [bcmod2-4], eax
+	mov dd [bcmod2-4], eax
 	mov eax, _zbufoff
-	mov dd ptr [bcmod1-4], eax
+	mov dd [bcmod1-4], eax
 endif
 	ret       ;Visual C's _cdecl requires EBX,ESI,EDI,EBP to be preserved
 
@@ -790,12 +790,12 @@ _drawboundcubesse:
 	push ebx   ;Visual C's _cdecl requires EBX,ESI,EDI,EBP to be preserved
 	push edi
 
-	movzx edi, db ptr [eax+6]
+	movzx edi, db [eax+6]
 	and ecx, edi
 	jz retboundcube
 
 	movaps xmm7, _ztabasm[MAXZSIZ*16]
-	movzx edi, dw ptr [eax+4]
+	movzx edi, dw [eax+4]
 	shl edi, 4
 	addps xmm7, _ztabasm[edi]
 	movhlps xmm0, xmm7
@@ -804,8 +804,8 @@ _drawboundcubesse:
 
 	lea ecx, _ptfaces16[ecx*8]
 
-	movzx ebx, db ptr [ecx+1] ;                           ›
-	movzx edi, db ptr [ecx+2] ;                           ›
+	movzx ebx, db [ecx+1] ;                           ›
+	movzx edi, db [ecx+2] ;                           ›
 	movaps xmm0, _caddasm[ebx]  ;xmm0: [ z0, z0, y0, x0]    €
 	addps xmm0, xmm7            ;                           €€±
 	movaps xmm1, _caddasm[edi]  ;xmm1: [ z1, z1, y1, x1]    €
@@ -816,8 +816,8 @@ _drawboundcubesse:
 	rcpps xmm0, xmm0            ;xmm6: [/z0,/z0,/z1,/z1]    €€
 	mulps xmm0, xmm1            ;xmm0: [sy0,sx0,sy1,sx1]    €€±±
 
-	movzx ebx, db ptr [ecx+3] ;                           ›
-	movzx edi, db ptr [ecx+4] ;                           ›
+	movzx ebx, db [ecx+3] ;                           ›
+	movzx edi, db [ecx+4] ;                           ›
 	movaps xmm2, _caddasm[ebx]  ;xmm2: [ z2, z2, y2, x2]    €
 	addps xmm2, xmm7            ;                           €€±
 	movaps xmm3, _caddasm[edi]  ;xmm3: [ z3, z3, y3, x3]    €
@@ -840,11 +840,11 @@ _drawboundcubesse:
 	pminsw mm0, mm2             ;                           ›
 	pmaxsw mm1, mm2             ;                           ›
 
-	cmp db ptr [ecx], 4
+	cmp db [ecx], 4
 	je short bcskip6case
 
-	movzx ebx, db ptr [ecx+5] ;                           ›
-	movzx edi, db ptr [ecx+6] ;                           ›
+	movzx ebx, db [ecx+5] ;                           ›
+	movzx edi, db [ecx+6] ;                           ›
 	movaps xmm4, _caddasm[ebx]  ;xmm4: [ z4, z4, y4, x4]    €
 	addps xmm4, xmm7            ;                           €€±
 	movaps xmm5, _caddasm[edi]  ;xmm5: [ z5, z5, y5, x5]    €
@@ -884,7 +884,7 @@ bcskip6case:
 	sub ebx, 65536              ;                           ›
 	jc short retboundcube       ;                           ›
 
-	movzx edi, db ptr [eax+7]
+	movzx edi, db [eax+7]
 	punpcklbw mm5, [eax]
 	pmulhuw mm5, _kv6colmul[edi*8]
 	paddw mm5, _kv6coladd
@@ -903,11 +903,11 @@ boundcubenextline:
 	mov ecx, edx
 begstosb:
 ifdef USEZBUFFER
-	ucomiss xmm0, dd ptr [eax+ecx*4]
+	ucomiss xmm0, dd [eax+ecx*4]
 	jnc short skipdrawpix
-	movss dd ptr [eax+ecx*4], xmm0
+	movss dd [eax+ecx*4], xmm0
 endif
-	movd dd ptr [edi+ecx*4], mm5
+	movd dd [edi+ecx*4], mm5
 skipdrawpix:
 	inc ecx
 	jnz begstosb
@@ -929,14 +929,14 @@ retboundcube:
 PUBLIC _drawboundcube3dninit   ;Visual C entry point (pass by stack)
 _drawboundcube3dninit:
 	mov eax, _kv6frameplace
-	mov dd ptr [bcmod0_3dn-4], eax
+	mov dd [bcmod0_3dn-4], eax
 	mov eax, _kv6bytesperline
-	mov dd ptr [bcmod3_3dn-4], eax
+	mov dd [bcmod3_3dn-4], eax
 ifdef USEZBUFFER
 	;mov eax, _kv6bytesperline
-	mov dd ptr [bcmod2_3dn-4], eax
+	mov dd [bcmod2_3dn-4], eax
 	mov eax, _zbufoff
-	mov dd ptr [bcmod1_3dn-4], eax
+	mov dd [bcmod1_3dn-4], eax
 endif
 	ret       ;Visual C's _cdecl requires EBX,ESI,EDI,EBP to be preserved
 
@@ -948,28 +948,28 @@ _drawboundcube3dn:
 	push ebx   ;Visual C's _cdecl requires EBX,ESI,EDI,EBP to be preserved
 	push edi
 
-	movzx edi, db ptr [eax+6]
+	movzx edi, db [eax+6]
 	and ecx, edi
 	jz retboundcube_3dn
 
-	movq mm6, dq ptr _ztabasm[MAXZSIZ*16]
-	movq mm7, dq ptr _ztabasm[MAXZSIZ*16+8]
-	movzx edi, dw ptr [eax+4]
+	movq mm6, dq _ztabasm[MAXZSIZ*16]
+	movq mm7, dq _ztabasm[MAXZSIZ*16+8]
+	movzx edi, dw [eax+4]
 	shl edi, 4
-	pfadd mm6, dq ptr _ztabasm[edi]
-	pfadd mm7, dq ptr _ztabasm[edi+8]
+	pfadd mm6, dq _ztabasm[edi]
+	pfadd mm7, dq _ztabasm[edi+8]
 	movq mm0, mm7
-	pcmpgtd mm0, dq ptr _scisdist
+	pcmpgtd mm0, dq _scisdist
 	movd edx, mm0
 	test edx, edx
 	jz retboundcube_3dn
 
 	lea ecx, _ptfaces16[ecx*8]
 
-	movzx ebx, db ptr [ecx+1]
-	movzx edi, db ptr [ecx+2]
-	movq mm0, dq ptr _caddasm[ebx]
-	movq mm1, dq ptr _caddasm[edi]
+	movzx ebx, db [ecx+1]
+	movzx edi, db [ecx+2]
+	movq mm0, dq _caddasm[ebx]
+	movq mm1, dq _caddasm[edi]
 	pfadd mm0, mm6              ;mm0: [   y0    x0]
 	pfadd mm1, mm6              ;mm1: [   y1    x1]
 	movd mm5, _caddasm[ebx+8]
@@ -984,10 +984,10 @@ _drawboundcube3dn:
 	pf2id mm1, mm1              ;mm1: [  sy1   sx1]
 	packssdw mm0, mm1           ;mm0: [sy1 sx1 sy0 sx0]
 
-	movzx ebx, db ptr [ecx+3]
-	movzx edi, db ptr [ecx+4]
-	movq mm2, dq ptr _caddasm[ebx]
-	movq mm3, dq ptr _caddasm[edi]
+	movzx ebx, db [ecx+3]
+	movzx edi, db [ecx+4]
+	movq mm2, dq _caddasm[ebx]
+	movq mm3, dq _caddasm[edi]
 	pfadd mm2, mm6              ;mm2: [   y2    x2]
 	pfadd mm3, mm6              ;mm3: [   y3    x3]
 	movd mm5, _caddasm[ebx+8]
@@ -1006,13 +1006,13 @@ _drawboundcube3dn:
 	pminsw mm0, mm2             ;mm0: [sy1 sx1 sy0 sx0] <-min
 	pmaxsw mm1, mm2             ;mm1: [sy1 sx1 sy0 sx0] <-max
 
-	cmp db ptr [ecx], 4
+	cmp db [ecx], 4
 	je short bcskip6case_3dn
 
-	movzx ebx, db ptr [ecx+5]
-	movzx edi, db ptr [ecx+6]
-	movq mm2, dq ptr _caddasm[ebx]
-	movq mm3, dq ptr _caddasm[edi]
+	movzx ebx, db [ecx+5]
+	movzx edi, db [ecx+6]
+	movq mm2, dq _caddasm[ebx]
+	movq mm3, dq _caddasm[edi]
 	pfadd mm2, mm6              ;mm2: [   y4    x4]
 	pfadd mm3, mm6              ;mm3: [   y5    x5]
 	movd mm5, _caddasm[ebx+8]
@@ -1052,7 +1052,7 @@ bcskip6case_3dn:
 	sub ebx, 65536              ;                           ›
 	jc short retboundcube_3dn   ;                           ›
 
-	movzx edi, db ptr [eax+7]
+	movzx edi, db [eax+7]
 	punpcklbw mm5, [eax]
 	pmulhuw mm5, _kv6colmul[edi*8]
 	paddw mm5, _kv6coladd
@@ -1076,9 +1076,9 @@ ifdef USEZBUFFER
 	movd edx, mm0
 	test edx, edx
 	jnz short skipdrawpix_3dn
-	movd dd ptr [eax+ecx*4], mm7
+	movd dd [eax+ecx*4], mm7
 endif
-	movd dd ptr [edi+ecx*4], mm5
+	movd dd [edi+ecx*4], mm5
 skipdrawpix_3dn:
 	inc ecx
 	jnz begstosb_3dn
