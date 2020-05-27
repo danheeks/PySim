@@ -1,7 +1,6 @@
 ;.686
 ;.XMM
 
-USEZBUFFER EQU 1  ;To disable, put ; in front of line
 LOGPREC EQU (8+12)
 
 EXTERN _gi:dd
@@ -207,9 +206,7 @@ loop0:
 	pmulhuw mm5, mm2
 	psrlw mm5, 7
 	packuswb mm5, mm5
-ifdef USEZBUFFER
 	punpckldq mm5, mm6         ;Stuff ogx into hi part of color for Z buffer
-endif
 	por mm3, mm6               ;mm3: [ gx  0  ogx -gy]
 loop1: ;if (dmulrethigh(gylookup[edx*4],c->cx1,c->cy1,ogx) >= 0) jmp endloop1
 	pshufw mm7, mm1, 0ddh      ;mm7: [cy1 cx1 cy1 cx1]
@@ -218,13 +215,8 @@ loop1: ;if (dmulrethigh(gylookup[edx*4],c->cx1,c->cy1,ogx) >= 0) jmp endloop1
 	test eax, eax              ;if (cy1*ogx ? gy*cx1)
 	jle endloop1
 	psubd mm1, dq _gi
-ifdef USEZBUFFER
 	movntq [ebx], mm5
 	sub ebx, 8
-else
-	movd [ebx], mm5
-	sub ebx, 4
-endif
 	cmp ebx, [esp+2048]
 	jnb loop1
 	jmp predeletez
@@ -255,9 +247,7 @@ loop2:
 	pmulhuw mm5, mm2
 	psrlw mm5, 7
 	packuswb mm5, mm5
-ifdef USEZBUFFER
 	punpckldq mm5, mm6         ;Stuff ogx into hi part of color for Z buffer
-endif
 	por mm3, mm6               ;mm3: [ gx  0  ogx -gy]
 loop3: ;if (dmulrethigh(gylookup[ecx*4],c->cx0,c->cy0,ogx) < 0) jmp endloop3
 	pshufw mm7, mm0, 0ddh      ;mm7: [cy0 cx0 cy0 cx0]
@@ -266,13 +256,8 @@ loop3: ;if (dmulrethigh(gylookup[ecx*4],c->cx0,c->cy0,ogx) < 0) jmp endloop3
 	test eax, eax              ;if (cy0*ogx ? gy*cx0)
 	jg endloop3
 	paddd mm0, dq _gi
-ifdef USEZBUFFER
 	movntq [ebx], mm5
 	add ebx, 8
-else
-	movd [ebx], mm5
-	add ebx, 4
-endif
 	cmp ebx, [esp+4+2048]
 	jna loop3
 	jmp predeletez
@@ -304,14 +289,9 @@ drawceilloop:
 	pmulhuw mm5, mm2
 	psrlw mm5, 7
 	packuswb mm5, mm5
-ifdef USEZBUFFER
 	punpckldq mm5, mm6         ;Stuff gx into hi part of color for Z buffer
 	movntq [eax], mm5
 	add eax, 8
-else
-	movd [eax], mm5
-	add eax, 4
-endif
 	mov [esp+2048], eax
 	cmp eax, [esp+4+2048]
 	jna drawceilloop
@@ -338,14 +318,9 @@ drawflorloop:
 	pmulhuw mm5, mm2
 	psrlw mm5, 7
 	packuswb mm5, mm5
-ifdef USEZBUFFER
 	punpckldq mm5, mm6         ;Stuff gx into hi part of color for Z buffer
 	movntq [eax], mm5
 	sub eax, 8
-else
-	movd [eax], mm5   ;(Used to page fault here)
-	sub eax, 4
-endif
 	mov [esp+4+2048], eax
 	cmp eax, [esp+2048]
 	jnb drawflorloop
@@ -453,21 +428,13 @@ prebegsearchi16:
 	test eax, eax              ;if (day*ogx ? gy*dax)
 	jle begsearchi
 	movq mm1, mm5
-ifdef USEZBUFFER
 	sub edx, 16 SHL 3
-else
-	sub edx, 16 SHL 2
-endif
 	jmp prebegsearchi16
 
 	jmp begsearchi
 		;while (dmulrethigh(gylookup[v[2]+1],dax,day,ogx) < 0)
 prebegsearchi:
-ifdef USEZBUFFER
 	sub edx, 4 SHL 1             ;col -= 8;
-else
-	sub edx, 4                   ;col -= 4;
-endif
 	psubd mm1, dq _gi     ;dax -= gi[0]; day -= gi[1];
 begsearchi:
 	pshufw mm7, mm1, 0ddh      ;mm7: [day dax day dax]
@@ -504,11 +471,7 @@ skipinsertloop:
 	paddd mm7, dq _gi
 	movzx eax, db [3+edi+eax*4]
 	mov [esp+32+4+2048], edx        ;c[1].i1 = (long *)col;
-ifdef USEZBUFFER
 	add edx, 8                      ;c[0].i0 = (long *)(col+(4<<1));
-else
-	add edx, 4                      ;c[0].i0 = (long *)(col+4);
-endif
 	mov [esp+2048], edx
 	mov edx, eax               ;c[1].z1 = c[0].z0 = v[(v[0]<<2)+3];
 	mov [esp+8+2048], eax
@@ -626,13 +589,8 @@ endprebegloop:
 	cmp eax, ebx
 	ja short endnextloop
 endbegloop:
-ifdef USEZBUFFER
 	movntq [eax], mm5
 	add eax, 8
-else
-	movd [eax], mm5
-	add eax, 4
-endif
 	cmp eax, ebx
 	jbe short endbegloop
 endnextloop:
@@ -668,14 +626,9 @@ skysearch:
 	jnz short skysearch        ;if (cy1*xvi ? -yvi*cx1)
 
 	movd mm6, dd [esi+edi*4]
-ifdef USEZBUFFER
 	punpckldq mm6, mm5
 	movntq [ebx], mm6
 	sub ebx, 8
-else
-	movd [ebx], mm6
-	sub ebx, 4
-endif
 	cmp eax, ebx
 	jbe short preskysearch
 endskyslab:
@@ -747,9 +700,7 @@ deleteloop:
 
 MAXZSIZ EQU 1024 ;WARNING: THIS IS BAD SINCE KV6 format supports up to 65535!
 
-ifdef USEZBUFFER
 EXTERN _zbufoff:dd
-endif
 EXTERN _ptfaces16:dd
 
 PUBLIC _opti4asm, _caddasm, _ztabasm, _scisdist, _kv6colmul, _kv6coladd
@@ -774,12 +725,10 @@ _drawboundcubesseinit:
 	mov dd [bcmod0-4], eax
 	mov eax, _kv6bytesperline
 	mov dd [bcmod3-4], eax
-ifdef USEZBUFFER
 	;mov eax, _kv6bytesperline
 	mov dd [bcmod2-4], eax
 	mov eax, _zbufoff
 	mov dd [bcmod1-4], eax
-endif
 	ret       ;Visual C's _cdecl requires EBX,ESI,EDI,EBP to be preserved
 
 ALIGN 16
@@ -894,27 +843,21 @@ bcskip6case:
 	lea edi, [edi+edx*4+88888888h] ;_kv6frameplace
 bcmod0:
 	neg edx
-ifdef USEZBUFFER
 	movhlps xmm0, xmm7
 	lea eax, [edi+88888888h] ;_zbufoff
 bcmod1:
-endif
 boundcubenextline:
 	mov ecx, edx
 begstosb:
-ifdef USEZBUFFER
 	ucomiss xmm0, dd [eax+ecx*4]
 	jnc short skipdrawpix
 	movss dd [eax+ecx*4], xmm0
-endif
 	movd dd [edi+ecx*4], mm5
 skipdrawpix:
 	inc ecx
 	jnz begstosb
-ifdef USEZBUFFER
 	add eax, 88888888h; _kv6bytesperline
 bcmod2:
-endif
 	add edi, 88888888h ;_kv6bytesperline
 bcmod3:
 
@@ -932,12 +875,10 @@ _drawboundcube3dninit:
 	mov dd [bcmod0_3dn-4], eax
 	mov eax, _kv6bytesperline
 	mov dd [bcmod3_3dn-4], eax
-ifdef USEZBUFFER
 	;mov eax, _kv6bytesperline
 	mov dd [bcmod2_3dn-4], eax
 	mov eax, _zbufoff
 	mov dd [bcmod1_3dn-4], eax
-endif
 	ret       ;Visual C's _cdecl requires EBX,ESI,EDI,EBP to be preserved
 
 ALIGN 16
@@ -1063,29 +1004,23 @@ bcskip6case_3dn:
 bcmod0_3dn:
 	neg edx
 	movd mm1, edx
-ifdef USEZBUFFER
 	lea eax, [edi+88888888h] ;_zbufoff
 bcmod1_3dn:
-endif
 boundcubenextline_3dn:
 	movd ecx, mm1
 begstosb_3dn:
-ifdef USEZBUFFER
 	movq mm0, mm7
 	pcmpgtd mm0, [eax+ecx*4]
 	movd edx, mm0
 	test edx, edx
 	jnz short skipdrawpix_3dn
 	movd dd [eax+ecx*4], mm7
-endif
 	movd dd [edi+ecx*4], mm5
 skipdrawpix_3dn:
 	inc ecx
 	jnz begstosb_3dn
-ifdef USEZBUFFER
 	add eax, 88888888h; _kv6bytesperline
 bcmod2_3dn:
-endif
 	add edi, 88888888h ;_kv6bytesperline
 bcmod3_3dn:
 
