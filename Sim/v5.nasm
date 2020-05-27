@@ -719,45 +719,45 @@ _qbplbpp: dq 0 ;[0,0,bpl,bpp]
 _kv6frameplace: dd 0
 _kv6bytesperline: dd 0
 
-PUBLIC _drawboundcubesseinit   ;Visual C entry point (pass by stack)
+;PUBLIC _drawboundcubesseinit   ;Visual C entry point (pass by stack)
 _drawboundcubesseinit:
 	mov eax, _kv6frameplace
-	mov dd [bcmod0-4], eax
+	mov [bcmod0-4], eax
 	mov eax, _kv6bytesperline
-	mov dd [bcmod3-4], eax
+	mov [bcmod3-4], eax
 	;mov eax, _kv6bytesperline
-	mov dd [bcmod2-4], eax
+	mov [bcmod2-4], eax
 	mov eax, _zbufoff
-	mov dd [bcmod1-4], eax
+	mov [bcmod1-4], eax
 	ret       ;Visual C's _cdecl requires EBX,ESI,EDI,EBP to be preserved
 
 ALIGN 16
-PUBLIC _drawboundcubesse       ;Visual C entry point (pass by stack)
+;PUBLIC _drawboundcubesse       ;Visual C entry point (pass by stack)
 _drawboundcubesse:
 	mov eax, [esp+4]
 	mov ecx, [esp+8]
 	push ebx   ;Visual C's _cdecl requires EBX,ESI,EDI,EBP to be preserved
 	push edi
 
-	movzx edi, db [eax+6]
+	movzx edi, [eax+6]
 	and ecx, edi
 	jz retboundcube
 
-	movaps xmm7, _ztabasm[MAXZSIZ*16]
-	movzx edi, dw [eax+4]
+	movaps xmm7, [_ztabasm+MAXZSIZ*16]
+	movzx edi, [eax+4]
 	shl edi, 4
-	addps xmm7, _ztabasm[edi]
+	addps xmm7, [_ztabasm+edi]
 	movhlps xmm0, xmm7
 	ucomiss xmm0, _scisdist
 	jc retboundcube
 
-	lea ecx, _ptfaces16[ecx*8]
+	lea ecx, [_ptfaces16+ecx*8]
 
-	movzx ebx, db [ecx+1] ;                           ›
-	movzx edi, db [ecx+2] ;                           ›
-	movaps xmm0, _caddasm[ebx]  ;xmm0: [ z0, z0, y0, x0]    €
+	movzx ebx, [ecx+1] ;                           ›
+	movzx edi, [ecx+2] ;                           ›
+	movaps xmm0, [_caddasm+ebx]  ;xmm0: [ z0, z0, y0, x0]    €
 	addps xmm0, xmm7            ;                           €€±
-	movaps xmm1, _caddasm[edi]  ;xmm1: [ z1, z1, y1, x1]    €
+	movaps xmm1, [_caddasm+edi]  ;xmm1: [ z1, z1, y1, x1]    €
 	addps xmm1, xmm7            ;                           €€±
 	movaps xmm6, xmm0           ;xmm6: [ z0, z0, y0, x0]    €
 	movhlps xmm0, xmm1          ;xmm0: [ z0, z0, z1, z1]    €
@@ -765,11 +765,11 @@ _drawboundcubesse:
 	rcpps xmm0, xmm0            ;xmm6: [/z0,/z0,/z1,/z1]    €€
 	mulps xmm0, xmm1            ;xmm0: [sy0,sx0,sy1,sx1]    €€±±
 
-	movzx ebx, db [ecx+3] ;                           ›
-	movzx edi, db [ecx+4] ;                           ›
-	movaps xmm2, _caddasm[ebx]  ;xmm2: [ z2, z2, y2, x2]    €
+	movzx ebx, [ecx+3] ;                           ›
+	movzx edi, [ecx+4] ;                           ›
+	movaps xmm2, [_caddasm+ebx]  ;xmm2: [ z2, z2, y2, x2]    €
 	addps xmm2, xmm7            ;                           €€±
-	movaps xmm3, _caddasm[edi]  ;xmm3: [ z3, z3, y3, x3]    €
+	movaps xmm3, [_caddasm+edi]  ;xmm3: [ z3, z3, y3, x3]    €
 	addps xmm3, xmm7            ;                           €€±
 	movaps xmm6, xmm2           ;xmm6: [ z2, z2, y2, x2]    €
 	movhlps xmm2, xmm3          ;xmm2: [ z2, z2, z3, z3]    €
@@ -789,14 +789,14 @@ _drawboundcubesse:
 	pminsw mm0, mm2             ;                           ›
 	pmaxsw mm1, mm2             ;                           ›
 
-	cmp db [ecx], 4
+	cmp [ecx], 4
 	je short bcskip6case
 
-	movzx ebx, db [ecx+5] ;                           ›
-	movzx edi, db [ecx+6] ;                           ›
-	movaps xmm4, _caddasm[ebx]  ;xmm4: [ z4, z4, y4, x4]    €
+	movzx ebx, [ecx+5] ;                           ›
+	movzx edi, [ecx+6] ;                           ›
+	movaps xmm4, [_caddasm+ebx]  ;xmm4: [ z4, z4, y4, x4]    €
 	addps xmm4, xmm7            ;                           €€±
-	movaps xmm5, _caddasm[edi]  ;xmm5: [ z5, z5, y5, x5]    €
+	movaps xmm5, [_caddasm+edi]  ;xmm5: [ z5, z5, y5, x5]    €
 	addps xmm5, xmm7            ;                           €€±
 	movaps xmm6, xmm4           ;xmm6: [ z4, z4, y4, x4]    €
 	movhlps xmm4, xmm5          ;xmm4: [ z4, z4, z5, z5]    €
@@ -833,9 +833,9 @@ bcskip6case:
 	sub ebx, 65536              ;                           ›
 	jc short retboundcube       ;                           ›
 
-	movzx edi, db [eax+7]
+	movzx edi, [eax+7]
 	punpcklbw mm5, [eax]
-	pmulhuw mm5, _kv6colmul[edi*8]
+	pmulhuw mm5, [_kv6colmul+edi*8]
 	paddw mm5, _kv6coladd
 	packuswb mm5, mm5
 	movd edi, mm0               ; edi: offs
@@ -849,10 +849,10 @@ bcmod1:
 boundcubenextline:
 	mov ecx, edx
 begstosb:
-	ucomiss xmm0, dd [eax+ecx*4]
+	ucomiss xmm0, [eax+ecx*4]
 	jnc short skipdrawpix
-	movss dd [eax+ecx*4], xmm0
-	movd dd [edi+ecx*4], mm5
+	movss [eax+ecx*4], xmm0
+	movd [edi+ecx*4], mm5
 skipdrawpix:
 	inc ecx
 	jnz begstosb
@@ -869,48 +869,48 @@ retboundcube:
 	pop ebx
 	ret
 
-PUBLIC _drawboundcube3dninit   ;Visual C entry point (pass by stack)
+;PUBLIC _drawboundcube3dninit   ;Visual C entry point (pass by stack)
 _drawboundcube3dninit:
 	mov eax, _kv6frameplace
-	mov dd [bcmod0_3dn-4], eax
+	mov [bcmod0_3dn-4], eax
 	mov eax, _kv6bytesperline
-	mov dd [bcmod3_3dn-4], eax
+	mov [bcmod3_3dn-4], eax
 	;mov eax, _kv6bytesperline
-	mov dd [bcmod2_3dn-4], eax
+	mov [bcmod2_3dn-4], eax
 	mov eax, _zbufoff
-	mov dd [bcmod1_3dn-4], eax
+	mov [bcmod1_3dn-4], eax
 	ret       ;Visual C's _cdecl requires EBX,ESI,EDI,EBP to be preserved
 
 ALIGN 16
-PUBLIC _drawboundcube3dn       ;Visual C entry point (pass by stack)
+;PUBLIC _drawboundcube3dn       ;Visual C entry point (pass by stack)
 _drawboundcube3dn:
 	mov eax, [esp+4]
 	mov ecx, [esp+8]
 	push ebx   ;Visual C's _cdecl requires EBX,ESI,EDI,EBP to be preserved
 	push edi
 
-	movzx edi, db [eax+6]
+	movzx edi, [eax+6]
 	and ecx, edi
 	jz retboundcube_3dn
 
-	movq mm6, dq _ztabasm[MAXZSIZ*16]
-	movq mm7, dq _ztabasm[MAXZSIZ*16+8]
-	movzx edi, dw [eax+4]
+	movq mm6, [_ztabasm+MAXZSIZ*16]
+	movq mm7, [_ztabasm+MAXZSIZ*16+8]
+	movzx edi, [eax+4]
 	shl edi, 4
-	pfadd mm6, dq _ztabasm[edi]
-	pfadd mm7, dq _ztabasm[edi+8]
+	pfadd mm6, [_ztabasm+edi]
+	pfadd mm7, [_ztabasm+edi+8]
 	movq mm0, mm7
-	pcmpgtd mm0, dq _scisdist
+	pcmpgtd mm0, [_scisdist]
 	movd edx, mm0
 	test edx, edx
 	jz retboundcube_3dn
 
-	lea ecx, _ptfaces16[ecx*8]
+	lea ecx, [_ptfaces16+ecx*8]
 
-	movzx ebx, db [ecx+1]
-	movzx edi, db [ecx+2]
-	movq mm0, dq _caddasm[ebx]
-	movq mm1, dq _caddasm[edi]
+	movzx ebx, [ecx+1]
+	movzx edi, [ecx+2]
+	movq mm0, [_caddasm+ebx]
+	movq mm1, [_caddasm+edi]
 	pfadd mm0, mm6              ;mm0: [   y0    x0]
 	pfadd mm1, mm6              ;mm1: [   y1    x1]
 	movd mm5, _caddasm[ebx+8]
