@@ -1015,7 +1015,7 @@ begstosb_3dn:
 	test edx, edx
 	jnz short skipdrawpix_3dn
 	movd [eax+ecx*4], mm7
-	movd dd [edi+ecx*4], mm5
+	movd [edi+ecx*4], mm5
 skipdrawpix_3dn:
 	inc ecx
 	jnz begstosb_3dn
