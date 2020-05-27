@@ -490,53 +490,53 @@ remiporend:
 
 	mov eax, esi
 	shl eax, 29
-	xor eax, _gixy[0]
-	mov eax, _gdz[0]
+	xor eax, [_gixy+0]
+	mov eax, [_gdz+0]
 	js short skipbladd0
-	add _gpz[0], eax
+	add [_gpz+0], eax
 skipbladd0:
 	add eax, eax
 	jno short skipremip0
-	mov _gpz[0], 7fffffffh
+	mov [_gpz+0], 7fffffffh
 	xor eax, eax
 skipremip0:
-	mov _gdz[0], eax
+	mov [_gdz+0], eax
 
 	mov [ebx+8+2048], ecx ;this is the official place to backup ecx
 
 	mov eax, esi
-	mov cl, db gmipcnt
+	mov cl, [gmipcnt]
 	add cl, 18
 	shl eax, cl
-	xor eax, _gixy[4]
-	mov eax, _gdz[4]
+	xor eax, [_gixy+4]
+	mov eax, [_gdz+4]
 	js short skipbladd1
-	add _gpz[4], eax
+	add [_gpz+4], eax
 skipbladd1:
 	add eax, eax
 	jno short skipremip1
-	mov _gpz[4], 7fffffffh
+	mov [_gpz+4], 7fffffffh
 	xor eax, eax
 skipremip1:
-	mov _gdz[4], eax
+	mov [_gdz+4], eax
 
 	shr esi, 2
 	mov eax, esi
-	movzx ecx, db gmipcnt
-	and esi, gxmipk[ecx*4] ;mask for x (1:1024->512, etc...)
-	and eax, gymipk[ecx*4] ;mask for y (1:1024->512, etc...)
+	movzx ecx, [gmipcnt]
+	and esi, [gxmipk+ecx*4] ;mask for x (1:1024->512, etc...)
+	and eax, [gymipk+ecx*4] ;mask for y (1:1024->512, etc...)
 	lea esi, [eax+esi*2]
-	add esi, gamipk[ecx*4] ;add offset (1:sptr+1024*1024*4, etc...)
+	add esi, [gamipk+ecx*4] ;add offset (1:sptr+1024*1024*4, etc...)
 
-	movzx eax, db gmipcnt
-	mov eax, gylut[eax*4]
+	movzx eax, [gmipcnt]
+	mov eax, [gylut+eax*4]
 	mov gylookoff, eax
 
-	sar _gixy[4], 1
+	sar [_gixy+4], 1
 
-	mov eax, _cfasm[2048]
+	mov eax, [_cfasm+2048]
 startremip0:
-	shr dd [eax+8+2048], 1
+	shr [eax+8+2048], 1
 	inc dd [eax+12+2048]
 	shr dd [eax+12+2048], 1
 	add eax, 32
